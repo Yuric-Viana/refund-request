@@ -144,6 +144,7 @@ expenseList.addEventListener('click', function (event) {
     }
 
     updateTotais()
+    expense.focus()
 })
 
 function clearInputs () {
