@@ -3,23 +3,27 @@ const form = document.querySelector('form')
 const amount = document.getElementById('amount')
 const expense = document.getElementById('expense')
 const category = document.getElementById('category')
+const inputs = document.querySelectorAll('input')
 
+// Seleciona os elementos da lista
 const expenseList = document.querySelector('ul')
+const amountExpenses = document.querySelector('aside header p span')
+const valueExpenses = document.querySelector('aside header h2')
 
 // Captura o evento de input para formatar o valor
-amount.oninput = () => {   
+amount.oninput = () => {
     // Obtém o valor atual do input e remove os caracteres não numéricos
-    let valueamount = amount.value.replace(/\D+/g, '')
+    let valueAmount = amount.value.replace(/\D+/g, '')
 
     // Transforma o valor em centavos
-    valueamount = Number(valueamount) / 100
+    valueAmount = Number(valueAmount) / 100
 
     // Atualiza o valor do input
-    amount.value = formatCurrencyBRL(valueamount)
+    amount.value = formatCurrencyBRL(valueAmount)
 }
 
+// Formata o valor no padrão BRL (real brasileiro)
 function formatCurrencyBRL(value) {
-    // Formata o valor no padrão BRL (real brasileiro)
     value = value.toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL'
@@ -43,6 +47,12 @@ form.onsubmit = (event) => {
     }
 
     expenseAdd(newExpense)
+
+    category.value = ''
+
+    inputs.forEach(itens => {
+        itens.value = ''
+    })
 }
 
 // Adiciona um novo item na lista
@@ -79,8 +89,49 @@ function expenseAdd(newExpense) {
 
         expenseList.append(expenseItem)
 
+        updateTotais()
+
     } catch (error) {
         alert('Não foi possível adicionar a despesa a lista.')
         console.log(error);
     }
 }
+
+// Atualiza os totais
+function updateTotais() {
+    try {
+        const items = expenseList.children
+
+        amountExpenses.textContent = `${items.length} ${items.length > 1 ? 'despesas' : 'despesa'}`
+
+        let total = 0
+
+        for(let item = 0; item < items.length; item++) {
+            const itemAmount = items[item].querySelector('.expense-amount')
+
+            let value = itemAmount.textContent.replace(/[^\d]/g, '').replace(',', '.')
+
+            value = parseFloat(value)
+
+            if(isNaN(value)) {
+                return alert('Não foi possível atualizar o valor total. O valor não parece ser número.')
+            }
+
+            total += Number(value) / 100            
+        }
+        
+        const symbolBRL = document.createElement('small')
+        symbolBRL.textContent = 'R$'
+
+        total = formatCurrencyBRL(total).replace('R$', '')
+    
+        valueExpenses.innerHTML = ''
+
+        valueExpenses.append(symbolBRL, total)
+
+    } catch (error) {
+        console.log(error);
+        alert('Não foi possível atualizar os totais.')
+    }
+}
+
