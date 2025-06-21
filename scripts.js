@@ -48,11 +48,7 @@ form.onsubmit = (event) => {
 
     expenseAdd(newExpense)
 
-    category.value = ''
-
-    inputs.forEach(itens => {
-        itens.value = ''
-    })
+    clearInputs()
 }
 
 // Adiciona um novo item na lista
@@ -106,25 +102,25 @@ function updateTotais() {
 
         let total = 0
 
-        for(let item = 0; item < items.length; item++) {
+        for (let item = 0; item < items.length; item++) {
             const itemAmount = items[item].querySelector('.expense-amount')
 
             let value = itemAmount.textContent.replace(/[^\d]/g, '').replace(',', '.')
 
             value = parseFloat(value)
 
-            if(isNaN(value)) {
+            if (isNaN(value)) {
                 return alert('Não foi possível atualizar o valor total. O valor não parece ser número.')
             }
 
-            total += Number(value) / 100            
+            total += Number(value) / 100
         }
-        
+
         const symbolBRL = document.createElement('small')
         symbolBRL.textContent = 'R$'
 
         total = formatCurrencyBRL(total).replace('R$', '')
-    
+
         valueExpenses.innerHTML = ''
 
         valueExpenses.append(symbolBRL, total)
@@ -137,15 +133,25 @@ function updateTotais() {
 
 // Evento que captura o evento de clique nos itens da lista
 expenseList.addEventListener('click', function (event) {
-    
+
     // Verifica se o elemento clicado contém a classe remove-icon
-    if(event.target.classList.contains('remove-icon')) {
-        
+    if (event.target.classList.contains('remove-icon')) {
+
         // No elemento clicado procure o elemento pai li
         const item = event.target.closest('li')
-        
+
         item.remove()
     }
 
     updateTotais()
 })
+
+function clearInputs () {
+    category.value = ''
+
+    inputs.forEach(itens => {
+        itens.value = ''
+    })
+
+    expense.focus()
+}
